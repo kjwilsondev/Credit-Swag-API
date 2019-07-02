@@ -1,41 +1,22 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 const Schema = mongoose.Schema;
-const bcrypt = require('bcrypt');
-const validator = require('validator');
+const School = require('./school');
 
 const UserSchema = new Schema({
-  type: { type: String },
-  requested: { type: Boolean },
-  accepted: { type: Boolean },
-  leaderClub: [{type: Schema.Types.ObjectId, ref: "Club"}],
-  clubs: [{ type: Schema.Types.ObjectId, ref: "Club" }],
-  firstName: { type: String, required: false },
-  lastName: { type: String, required: false },
+  createdAt: { type: Date },
+  updatedAt: { type: Date },
   username: { type: String, required: true },
-  email: {
-    type: String,
-    required: [true, 'Email Required'],
-    validate: {
-      validator: validator.isEmail,
-      message: `{VALUE} not a valid email`
-    }
-  },
-  number: {
-    type: String,
-    trim: true,
-    required: false
-  },
-  password: {
-    type: String,
-    required: [true, 'Password Required'],
-    minlength: [3, 'Password must be longer than 3 characters.'],
-  }
-}, {
-  timestamps: true,
+  password: { type: String, select: false },
+  School: { type: Schema.Types.ObjectId, ref: "School" }
 });
 
-// const User = mongoose.model("User", UserSchema);
 UserSchema.pre("save", function(next) {
+  const now = new Date();
+  this.updatedAt = now;
+  if (!this.createdAt) {
+    this.createdAt = now;
+  }
 
   // ENCRYPT PASSWORD
   const user = this;
@@ -46,12 +27,10 @@ UserSchema.pre("save", function(next) {
     bcrypt.hash(user.password, salt, (err, hash) => {
       user.password = hash;
       next();
-    }); //ends bcrypt.hash()
+    });
+  });
+});
 
-  }); //ends bcrypt.genSalt()
-
-}); //end UserSchema.pre()
-  
 UserSchema.methods.comparePassword = function(password, done) {
   bcrypt.compare(password, this.password, (err, isMatch) => {
     done(err, isMatch);
