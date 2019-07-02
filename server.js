@@ -1,7 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const path = require('path');
 const cors = require('cors');
+
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
@@ -26,6 +28,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', (req, res) => {
   res.json('Welcome to the Credit Swag API')
 });
+
+// controllers
+const auth = require('./controllers/auth')
+auth(app);
 
 app.listen(process.env.PORT || 5000)
 // app.listen(port); // for heroku
