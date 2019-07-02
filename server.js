@@ -30,7 +30,9 @@ app.get('/', (req, res) => {
 });
 
 // controllers
-const auth = require('./controllers/auth')
+const auth = require('./controllers/auth');
+// const checkAuth = require('./middleware/checkAuth')
+// checkAuth();
 auth(app);
 
 app.listen(process.env.PORT || 5000)

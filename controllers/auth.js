@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const School = require("../models/school");
 const jwt = require('jsonwebtoken');
 
 module.exports = (app) => {
@@ -53,5 +54,40 @@ module.exports = (app) => {
             console.log(err);
         });
     });
+
+    app.post('/school', async (req, res) => {
+        if (req.cookies && req.cookies.nToken) {
+            const uid = jwt.decode(req.cookies.nToken, process.env.SECRET)._id;
+            const user = await User.findById(uid);
+            // console.log('user:', user);
+            const school = new School(req.body);
+            // console.log('school:', school);
+            user.school = school;
+            // console.log('userrrr:', user);
+            
+            await user.save();
+            // await school.save();
+
+            console.log('Saved 🎉');
+            return res.json({user});
+        }
+    })
+
+    app.get('/school', (req, res) => {
+        if (req.cookies && req.cookies.nToken) {
+            const uid = jwt.decode(req.cookies.nToken, process.env.SECRET)._id;
+            User.findById(uid).then(user => {
+                if (user.school) {
+                    const school = user.school
+                    return res.json({school});
+                } else {
+                    return res.json({user});
+                }
+                
+            }).catch((err) => {
+                return res.sendStatus(500);
+            })
+        }
+    })
 
 }

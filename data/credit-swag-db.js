@@ -2,7 +2,7 @@
 const mongoose = require("mongoose");
 assert = require("assert");
 
-const url = process.env.MONGODB_URI || "mongodb://localhost/clubs-app-db";
+const url = process.env.MONGODB_URI || "mongodb://localhost/credit-swag-db";
 mongoose.Promise = global.Promise;
 
 mongoose.connect(
