@@ -90,4 +90,30 @@ module.exports = (app) => {
         }
     })
 
+    app.put('/school', (req, res) => {
+        console.log('here');
+        
+        // Update the title of your school!
+        if (req.cookies && req.cookies.nToken) {
+            const uid = jwt.decode(req.cookies.nToken, process.env.SECRET)._id;
+            User.findById(uid).then(user => {
+                if (user.school) {
+                    let school = user.school;
+                    school[title] = req.body.title
+                    user.save(school);
+                    
+                    // user.save();
+                    return res.json({school});
+                } else {
+                    return res.json({user});
+                }
+                
+            }).catch((err) => {
+                return res.sendStatus(500);
+            })
+        }
+    })
+
+    // Create a delete route like the put route above...
+
 }
